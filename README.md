@@ -65,7 +65,11 @@ docker build -t teste/quarkus:1.0.2 -f src/main/docker/Dockerfile.jvm .
 [Swagger](http://localhost:8080/q/swagger-ui/)
 
 ### Aula 1
-
 ```
 git checkout aula-1
+```
+
+### Aula 2
+```
+git checkout aula-2
 ```
