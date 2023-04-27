@@ -37,9 +37,6 @@ public class SucoResource {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-
-            Thread.sleep(10000);
-
             return Response.status(Response.Status.OK).entity(mapper.writeValueAsString(sucos)).build();
         } catch(Exception e){
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -60,9 +57,6 @@ public class SucoResource {
 
         try {
             if(suco != null){
-
-                Thread.sleep(10000);
-
                 return Response.status(Response.Status.OK).entity(mapper.writeValueAsString(suco)).build();
             }
             return Response.status(Response.Status.NO_CONTENT).build();
