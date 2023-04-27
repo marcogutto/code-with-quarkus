@@ -36,24 +36,14 @@ public class SucoResource {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        Response response = null;
-
         try {
 
-            // System.out.println("Antes ...");
+            Thread.sleep(10000);
 
-            Thread.sleep(5000);
-
-            // System.out.println("Suco ...");
-
-            response = Response.status(Response.Status.OK).entity(mapper.writeValueAsString(sucos)).build();
+            return Response.status(Response.Status.OK).entity(mapper.writeValueAsString(sucos)).build();
         } catch(Exception e){
-            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-
-        // System.out.println("Depois ...");
-
-        return response;
     }
 
     @GET
@@ -70,6 +60,9 @@ public class SucoResource {
 
         try {
             if(suco != null){
+
+                Thread.sleep(10000);
+
                 return Response.status(Response.Status.OK).entity(mapper.writeValueAsString(suco)).build();
             }
             return Response.status(Response.Status.NO_CONTENT).build();
