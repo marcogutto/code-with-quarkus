@@ -73,3 +73,13 @@ git checkout aula-1
 ```
 git checkout aula-2
 ```
+
+### Aula 3
+```
+git checkout aula-3
+```
+
+### Start Docker Mongo
+```
+docker run --name mongo -p 27017:27017 -d mongo:5.0.8-focal
+```

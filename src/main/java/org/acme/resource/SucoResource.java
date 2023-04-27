@@ -1,9 +1,5 @@
 package org.acme.resource;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
@@ -17,139 +13,92 @@ import javax.ws.rs.core.Response;
 
 import org.acme.domain.entity.Suco;
 import org.acme.domain.entity.SucoParcial;
+import org.bson.types.ObjectId;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.smallrye.mutiny.Uni;
 
 @Path("/v1/sucos")
 public class SucoResource {
 
-    List<Suco> sucos = new ArrayList<Suco>();
-
-    SucoResource(){
-        sucos.add(new Suco("1", "Uva", "Suco Natural de Uva", new BigDecimal("8.81")));
-        sucos.add(new Suco("2", "Laranja", "Suco Natural de Laranja", new BigDecimal("9.56")));
-    }
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findAll() {
+    public Uni<Response> findAll() {
 
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            return Response.status(Response.Status.OK).entity(mapper.writeValueAsString(sucos)).build();
-        } catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
+        return Suco.findAll().list().onItem().transform(s -> {
+            return Response.status(Response.Status.OK).entity(s).build();
+        }).onFailure().recoverWithItem(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
     }
 
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findById(@PathParam("id") String id) {
+    public Uni<Response> findById(@PathParam("id") String id) {
 
-        ObjectMapper mapper = new ObjectMapper();
+        return Suco.findById(new ObjectId(id)).onItem().transform(s -> {
+            return Response.status(Response.Status.OK).entity(s).build();
+        }).onFailure().recoverWithItem(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
 
-        Suco suco = sucos.stream()
-                        .filter(s -> s.getId().equals(id))
-                        .findAny()
-                        .orElse(null);
-
-        try {
-            if(suco != null){
-                return Response.status(Response.Status.OK).entity(mapper.writeValueAsString(suco)).build();
-            }
-            return Response.status(Response.Status.NO_CONTENT).build();
-        } catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response save(Suco suco) {
+    public Uni<Response> save(Suco suco) {
 
-        ObjectMapper mapper = new ObjectMapper();
-
-        Suco ultimo = sucos.get(sucos.size()-1);
-
-        suco.setId(String.valueOf(Integer.valueOf(ultimo.getId())+1));
-
-        sucos.add(suco);
-
-        try {
-            return Response.status(Response.Status.OK).entity(mapper.writeValueAsString(suco)).build();
-        } catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
+        return suco.persist().onItem().transform(s -> {
+            return Response.status(Response.Status.CREATED).entity(s).build();
+        }).onFailure().recoverWithItem(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+        
     }
 
     @PUT
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") String id, Suco suco) {
+    public Uni<Response> update(@PathParam("id") String id, Suco suco) {
 
-        ObjectMapper mapper = new ObjectMapper();
+        Uni<Suco> sucoUpdate = Suco.findById(new ObjectId(id));
 
-        Suco sucoUpdate = sucos.stream()
-                        .filter(s -> s.getId().equals(id))
-                        .findAny()
-                        .orElse(null);
-        
-        int index = sucos.indexOf(sucoUpdate);
+        return sucoUpdate.onItem().transform(s -> {
+            s.setNome(suco.getNome());
+            s.setDescricao(suco.getDescricao());
+            s.setValor(suco.getValor());
 
-        sucos.set(index, suco);
+            s.update().subscribe().asCompletionStage();
 
-        try {
-            return Response.status(Response.Status.OK).entity(mapper.writeValueAsString(suco)).build();
-        } catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
+            return s;
+        }).onItem().transform(s -> {
+            return Response.status(Response.Status.OK).entity(s).build();
+        }).onFailure().recoverWithItem(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());            
+ 
     }
 
     @PATCH
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response partialUpdate(@PathParam("id") String id, SucoParcial sucoParcial) {
+    public Uni<Response> partialUpdate(@PathParam("id") String id, SucoParcial sucoParcial) {
 
-        ObjectMapper mapper = new ObjectMapper();
+        Uni<Suco> sucoUpdate = Suco.findById(new ObjectId(id));
 
-        Suco sucoUpdate = sucos.stream()
-                        .filter(s -> s.getId().equals(id))
-                        .findAny()
-                        .orElse(null);
+        return sucoUpdate.onItem().transform(s -> {
+            s.setDescricao(sucoParcial.getDescricao());
+            s.setValor(sucoParcial.getValor());
 
-        try {
-            if(sucoUpdate == null){
-                return Response.status(Response.Status.NO_CONTENT).build();
-            } else {
-                int index = sucos.indexOf(sucoUpdate);
+            s.update().subscribe().asCompletionStage();
 
-                sucoUpdate.setValor(sucoParcial.getValor());
-                sucoUpdate.setDescricao(sucoParcial.getDescricao());
-        
-                sucos.set(index, sucoUpdate);
-                return Response.status(Response.Status.OK).entity(mapper.writeValueAsString(sucoUpdate)).build();
-            }
-        } catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
+            return s;
+        }).onItem().transform(s -> {
+            return Response.status(Response.Status.OK).entity(s).build();
+        }).onFailure().recoverWithItem(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+
     }
 
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response remove(@PathParam("id") String id) {
+    public Uni<Response> remove(@PathParam("id") String id) {
 
-        Suco sucoDelete = sucos.stream()
-                        .filter(s -> s.getId().equals(id))
-                        .findAny()
-                        .orElse(null);
-        
-        int index = sucos.indexOf(sucoDelete);
-
-        sucos.remove(index);
-
-        return Response.status(Response.Status.NO_CONTENT).build();
+        return Suco.findById(new ObjectId(id)).onItem().transform(s -> {
+            s.delete().subscribe().asCompletionStage();
+            return Response.status(Response.Status.OK).build();
+        }).onFailure().recoverWithItem(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
     }
 }
