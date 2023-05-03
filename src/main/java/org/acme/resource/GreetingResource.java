@@ -2,8 +2,13 @@ package org.acme.resource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.acme.domain.entity.Suco;
+import org.bson.types.ObjectId;
 
 import io.smallrye.mutiny.Uni;
 
@@ -17,10 +22,11 @@ public class GreetingResource {
 
         Uni<String> resposta = Uni.createFrom().item("Hello from RESTEasy Reactive").onItem().transform(t -> {
 
-            System.out.println("Processando ...");
-
             try {
                 Thread.sleep(1000);
+
+                System.out.println("Processado ...");
+
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
