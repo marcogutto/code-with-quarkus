@@ -1,6 +1,6 @@
 package org.acme.domain.entity;
 
-import java.math.BigDecimal;
+import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,10 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class SucoParcial {
+public class PlanetDTO implements Serializable {
 
-    private String descricao;
+    private String name;
 
-    private BigDecimal valor;
-    
 }

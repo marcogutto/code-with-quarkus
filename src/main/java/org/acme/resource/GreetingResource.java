@@ -2,13 +2,8 @@ package org.acme.resource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.acme.domain.entity.Suco;
-import org.bson.types.ObjectId;
 
 import io.smallrye.mutiny.Uni;
 
