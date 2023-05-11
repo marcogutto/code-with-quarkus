@@ -1,6 +1,6 @@
-package org.acme.domain.entity;
+package org.acme.domain.dto;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,10 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class SucoParcial {
+public class PeopleResultDTO {
 
-    private String descricao;
-
-    private BigDecimal valor;
+    private List<PeopleDTO> results;
     
 }

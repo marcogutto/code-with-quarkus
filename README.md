@@ -78,6 +78,14 @@ git checkout aula-2
 ```
 git checkout aula-3
 ```
+### Aula 4
+```
+git checkout aula-4
+```
+### Aula 5
+```
+git checkout aula-5
+```
 
 ### Start Docker Mongo
 ```

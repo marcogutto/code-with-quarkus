@@ -1,7 +1,6 @@
 package org.acme.domain.entity;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntity;
@@ -15,13 +14,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-@MongoEntity(collection = "suco")
-public class Suco extends ReactivePanacheMongoEntity implements Serializable{
+@MongoEntity(collection = "people")
+public class People extends ReactivePanacheMongoEntity implements Serializable{
     
-    private String nome;
+    private String name;
 
-    private String descricao;
+    private String height;
 
-    private BigDecimal valor;
+	private String mass;
+
+	private String hair_color;
+
+	private String skin_color;
+	
+    private String eye_color;
+	
+    private String birth_year;
+	
+    private String gender;
+
+    private String homeworld;
     
 }
