@@ -7,6 +7,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -29,28 +30,35 @@ public class PeopleResource {
     @RestClient
     SWAPIService service;
 
+    // @GET
+    // @Produces(MediaType.APPLICATION_JSON)
+    // public Uni<Response> findAll() {
+
+    //     return People.findAll().list().onItem().transform(s -> {
+    //         return Response.status(Response.Status.OK).entity(s).build();
+    //     }).onFailure().recoverWithItem(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+    // }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> findAll() {
+    public Uni<Response> findByName(@QueryParam("search") String search) {
 
-        return People.findAll().list().onItem().transform(s -> {
-            return Response.status(Response.Status.OK).entity(s).build();
-        }).onFailure().recoverWithItem(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
-    }
+        String pattern = "^"+search;
 
-    @GET
-    @Path("/{name}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> findByName(@PathParam("name") String name) {
+        if(search == null || search.length() == 0){
 
-        // String pattern = "^"+name;
+            return People.findAll().list().onItem().transform(s -> {
+                return Response.status(Response.Status.OK).entity(s).build();
+            }).onFailure().recoverWithItem(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
 
-        return People.find("{ name: { $regex: ?1, $options: 'i' } } ", name).firstResult()
+        }
+
+        return People.find("{ name: { $regex: ?1, $options: 'i' } } ", search).firstResult()
         .onItem().ifNotNull()
             .transform(p -> {
                 return Response.status(Response.Status.OK).entity(mapper.toDTO((People) p)).build();
             })
-        .onItem().ifNull().switchTo(service.searchPeople(name)
+        .onItem().ifNull().switchTo(service.searchPeople(search)
             .onItem().transform(p -> {
                 if(p.getResults() != null && p.getResults().size() > 0){
                     return Response.status(Response.Status.OK).entity(p.getResults().get(0)).build();    
