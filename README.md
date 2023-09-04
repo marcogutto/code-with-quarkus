@@ -91,3 +91,8 @@ git checkout aula-5
 ```
 docker run --name mongo -p 27017:27017 -d mongo:5.0.8-focal
 ```
+
+### Start Docker Sonarqube
+```
+docker run --name sonarqube -p 9000:9000 -d sonarqube:10.0.0-community
+```
