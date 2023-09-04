@@ -87,7 +87,14 @@ git checkout aula-4
 git checkout aula-5
 ```
 
+### Aula 6
+
 ### Start Docker Mongo
 ```
 docker run --name mongo -p 27017:27017 -d mongo:5.0.8-focal
+```
+
+### Start Keycloak
+```
+docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:22.0.1 start-dev
 ```
