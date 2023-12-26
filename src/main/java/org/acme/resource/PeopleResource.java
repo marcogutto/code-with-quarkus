@@ -78,15 +78,15 @@ public class PeopleResource {
         return People.find("{ name: { $regex: ?1 , $options: 'i' } }", people.getName()).firstResult()
         .onItem().ifNotNull()
             .transform(p -> {
-                return Response.status(Response.Status.OK).entity(p).build();
+                return Response.status(Response.Status.CREATED).entity(p).build();
             })
         .onItem().ifNull().switchTo(service.searchPeople(people.getName())
             .onItem().transform(p -> {
                 if(p.getResults() != null && p.getResults().size() > 0){
                     People.persist(mapper.toEntity(p.getResults().get(0))).subscribeAsCompletionStage();
-                    return Response.status(Response.Status.OK).entity(p.getResults().get(0)).build();
+                    return Response.status(Response.Status.CREATED).entity(p.getResults().get(0)).build();
                 }
-                return Response.status(Response.Status.OK).build();
+                return Response.status(Response.Status.CREATED).build();
             }))
         .onFailure().recoverWithItem(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
         
